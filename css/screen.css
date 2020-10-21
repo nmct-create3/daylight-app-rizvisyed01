@@ -8,10 +8,24 @@
 
 :root {
     /* colors */
+    --front-color: #0F3557;
+    --back-color: #CCE7FF;
+
+    /* kleuren toegekend */
+    --global-text-color: var(--front-color);
+    --global-background-color: var(--back-color);
+    --global-logo-fill: var(--front-color);
+    --global-horizon-color: var(--front-color);
 
     /* opacity */
+    --global-muted-opacity: 0.6;
 
     /* transitions */
+}
+
+
+@media (prefers-color-scheme: dark) {
+
 }
 
 /*------------------------------------*\
@@ -27,11 +41,25 @@
 html {
     font-size: 16px;
     line-height: 1.5;
-    font-family: Helvetica, arial, sans-serif;
+    font-family: 'Work sans', arial, sans-serif;
+    font-feature-settings: 'zero' 1;
     box-sizing: border-box;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+
+
+    color: var(--global-text-color);
+    background-color: var(--global-background-color);
 }
+
+/*dark mode class */
+.is-night {
+    /*of in een aparte var steken en omwisselen*/
+    --front-color: #CCE7FF;
+    --back-color: #0F3557;
+}
+
+
 
 *,
 *:before,
@@ -249,6 +277,10 @@ input::placeholder {
 */
 
 .c-logo {
+    display: flex;
+    align-items: center;
+    font-size: 1rem;
+    line-height: 1rem;
 
 }
 
@@ -259,11 +291,13 @@ input::placeholder {
 */
 
 .c-sun {
-
+    width: 1.375rem;
+    height: 1.375rem;
+    fill: var(--global-logo-fill);
 }
 
 .c-logo .c-sun {
-
+    margin-right: 0.5rem;
 }
 
 /*
@@ -272,11 +306,84 @@ input::placeholder {
     Main app wrapper
 */
 
+.c-app {
+    display: flex;
+    min-height: calc(100vh - 2 * 1rem);
+    flex-direction: column;
+
+
+    box-sizing: content-box; /*padding bij max-width optellen ipv aan de binnenkant toevoegen*/
+    max-width: 400px;
+    padding: 1rem 2rem; /* rem is met huidige font size dus 16 => 16 top bottom en 32 left right*/
+    margin: 0 auto; /*center => main standaard block element*/
+}
+
+.c-app__summary {
+    font-size: 1.75rem;
+    line-height: 2.5rem;
+}
+
 /*
     Component: Horizon
     ---
     Horizon with sun visualisation
 */
+
+.c-horizon {
+    margin-top: auto; /*vul de ruimte op*/
+}
+
+.c-horizon__line {
+    display: flex;
+    justify-content: space-between;
+    border-top: 1px solid var(--global-horizon-color);
+    padding-top: .625rem;
+    margin-bottom: 2.5rem;
+
+
+}
+
+.c-horizon__time {
+    font-size: .75rem;
+    line-height: 0.875rem;
+}
+
+
+.c-horizon__sky-wrapper {
+    position: relative;
+    height: 200px;
+    overflow: hidden;
+
+    padding-top: 1.375rem;
+    padding-right: 2.5rem;
+}
+
+
+.c-horizon__sky {
+    position: relative;
+    height: 100%;
+}
+
+.c-horizon__sun {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 40px;
+    transform: translateY(50%);
+
+}
+
+.c-horizon__sun::before {
+    content: attr(data-time);
+    display: block;
+    text-align: center;
+    margin-bottom: 8px;
+    font-size: .75rem;
+    line-height: 0.875rem;
+
+}
 
 /*------------------------------------*\
 #UTILITIES
@@ -286,6 +393,10 @@ input::placeholder {
     Utilities: Mute
     Mute with opacity
 */
+
+.u-muted {
+    opacity: var(--global-muted-opacity);
+}
 
 /*------------------------------------*\
 #STATES
@@ -319,16 +430,20 @@ input::placeholder {
         box-shadow: none !important;
         text-shadow: none !important;
     }
+
     a,
     a:visited {
         text-decoration: underline;
     }
+
     a[href]:after {
         content: " (" attr(href) ")";
     }
+
     abbr[title]:after {
         content: " (" attr(title) ")";
     }
+
     /*
     * Don't show links that are fragment identifiers,
     * or use the `javascript:` pseudo protocol
@@ -337,14 +452,17 @@ input::placeholder {
     a[href^="javascript:"]:after {
         content: "";
     }
+
     pre {
         white-space: pre-wrap !important;
     }
+
     pre,
     blockquote {
         border: 1px solid #999;
         page-break-inside: avoid;
     }
+
     /*
     * Printing Tables:
     * http://css-discuss.incutio.com/wiki/Printing_Tables
@@ -352,16 +470,19 @@ input::placeholder {
     thead {
         display: table-header-group;
     }
+
     tr,
     img {
         page-break-inside: avoid;
     }
+
     p,
     h2,
     h3 {
         orphans: 3;
         widows: 3;
     }
+
     h2,
     h3 {
         page-break-after: avoid;
