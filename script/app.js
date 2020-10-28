@@ -14,9 +14,7 @@ function _parseMillisecondsIntoReadableTime(timestamp) {
 }
 
 //own functions
-const getHtmlEl = selector => {
-    return document.querySelector(selector);
-}
+const getHtmlEl = selector => document.querySelector(selector);
 
 const fillHtmlText = (selector, text) => {
     getHtmlEl(selector).innerHTML = text;
@@ -26,9 +24,7 @@ const addClass = (selector, classname) =>{
     getHtmlEl(selector).classList.add(classname);
 }
 
-const calcMinDiff = (start, end) => {
-    return ((end.getHours() - start.getHours()) * 60) + (end.getMinutes() - start.getMinutes())
-}
+const calcMinDiff = (start, end) => ((end.getHours() - start.getHours()) * 60) + (end.getMinutes() - start.getMinutes());
 
 
 const itBeNight = () => {
@@ -41,10 +37,10 @@ const itBeDay = () => {
 
 
 // 5 TODO: maak updateSun functie
-const updateSun = (sun_el, left, bottom, now) => {
-    sun_el.setAttribute("data-time", now.getHours() + ":" + now.getMinutes());
-    sun_el.style.bottom = `${bottom}%`
-    sun_el.style.left = `${left}%`;
+const updateSun = (sunEl, left, bottom, now) => {
+    sunEl.setAttribute("data-time", `${now.getHours()}:${now.getMinutes()}`);
+    sunEl.style.bottom = `${bottom}%`
+    sunEl.style.left = `${left}%`;
 
 }
 
@@ -52,7 +48,6 @@ const calcAndUpdateSun = (sun, passedSunTime, totalMinSun) => {
     let newPercentage = passedSunTime / (totalMinSun) * 100;
     updateSun(sun, newPercentage, newPercentage < 50 ? newPercentage * 2 : (100 - newPercentage) * 2, new Date());
     fillHtmlText(".js-time-left", Math.round(totalMinSun - passedSunTime));
-
 }
 
 
@@ -69,7 +64,7 @@ const placeSunAndStartMoving = (totalMinutes, sunrise) => {
     calcAndUpdateSun(sun, passedSunTime, totalMinutes)
 
     // We voegen ook de 'is-loaded' class toe aan de body-tag.
-    addClass('BODY', 'is-loaded')
+    addClass('body', 'is-loaded')
 
     // Vergeet niet om het resterende aantal minuten in te vullen.
 
@@ -79,7 +74,6 @@ const placeSunAndStartMoving = (totalMinutes, sunrise) => {
     // Anders kunnen we huidige waarden evalueren en de zon updaten via de updateSun functie.
     // PS.: vergeet weer niet om het resterend aantal minuten te updaten en verhoog het aantal verstreken minuten.
     const interval = setInterval(() => {
-
         if (passedSunTime > totalMinutes) {
             itBeNight();
             clearInterval(interval);
@@ -87,10 +81,9 @@ const placeSunAndStartMoving = (totalMinutes, sunrise) => {
             itBeNight();
         } else {
             itBeDay();
-            calcAndUpdateSun(sun, passedSunTime, totalMinutes)
+            calcAndUpdateSun(sun, passedSunTime, totalMinutes);
             passedSunTime++;
         }
-
 
     }, 1000 * 60) //1000 ms == 1 sec *60
 };
@@ -101,25 +94,23 @@ const showResult = queryResponse => {
     // Zorg dat de juiste locatie weergegeven wordt, volgens wat je uit de API terug krijgt.
 
     // Toon ook de juiste tijd voor de opkomst van de zon en de zonsondergang.
-    fillHtmlText('.js-location', `${queryResponse.city["name"]}, ${queryResponse.city["country"]}`)
-    fillHtmlText('.js-sunrise', _parseMillisecondsIntoReadableTime(queryResponse.city["sunrise"]))
-    fillHtmlText('.js-sunset', _parseMillisecondsIntoReadableTime(queryResponse.city["sunset"]))
+    fillHtmlText('.js-location', `${queryResponse.city.name}, ${queryResponse.city.country}`)
+    fillHtmlText('.js-sunrise', _parseMillisecondsIntoReadableTime(queryResponse.city.sunrise))
+    fillHtmlText('.js-sunset', _parseMillisecondsIntoReadableTime(queryResponse.city.sunset))
 
-    const lightStart = new Date(queryResponse.city["sunrise"] * 1000);
-    const lightEnd = new Date(queryResponse.city["sunset"] * 1000);
+    const lightStart = new Date(queryResponse.city.sunrise * 1000);
+    const lightEnd = new Date(queryResponse.city.sunset * 1000);
 
     //Hier gaan we een functie oproepen die de zon een bepaalde positie kan geven en dit kan updaten.
     // Geef deze functie de periode tussen sunrise en sunset mee en het tijdstip van sunrise.
     placeSunAndStartMoving(calcMinDiff(lightStart, lightEnd), lightStart);
-
-
 };
 
 // 2 Aan de hand van een longitude en latitude gaan we de yahoo wheater API ophalen.
 const getAPI = async (lat, lon) => {
     // Eerst bouwen we onze url op
     const url = `http://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${APIKEY}&units=metric&lang=nl&cnt=1`
-    let customHeaders = new Headers();
+    const customHeaders = new Headers(); // Eigenlijk zijn headers niet nodig met deze backend.
     customHeaders.append('Accept', 'application/json');
 
     // Met de fetch API proberen we de data op te halen.
@@ -129,12 +120,12 @@ const getAPI = async (lat, lon) => {
         showResult(await response.json());
 
     } catch (err) {
-        console.log(`The has been an error, our expert team of monkeys are looking into it!`);
+        console.log(`The has been an error, our expert team of monkeys are looking into it!`); // Lol
     }
 
 };
 
-document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded', () => {
     // 1 We will query the API with longitude and latitude.
     getAPI(50.8027841, 3.2097454);
 });
